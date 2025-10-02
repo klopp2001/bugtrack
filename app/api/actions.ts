@@ -9,7 +9,7 @@ type UserTasksCount = {
 }
 
 
-type UserTask = {
+export type UserTask = {
     id: number,
     relatedProject: number,
     description: string,
@@ -32,10 +32,31 @@ export const getUserTasks = async () => {
         {
                 id: 0,
                 relatedProject: 14,
-                description: "make wheel for lada granta",
+                description: "make wheel for lada ziggranta",
                 shortDescription: "make wheel",
                 status: "active",
-                priority: "high" 
-        }
-    ]
+                priority: "low" 
+        }, {
+                id: 0,
+                relatedProject: 14,
+                description: "make wheel for lada ziggranta",
+                shortDescription: "make wheel",
+                status: "active",
+                priority: "low" 
+        }, {
+                id: 0,
+                relatedProject: 14,
+                description: "make wheel for lada ziggranta",
+                shortDescription: "make wheel",
+                status: "active",
+                priority: "low" 
+        }, {
+                id: 0,
+                relatedProject: 14,
+                description: "make wheel for lada ziggranta",
+                shortDescription: "make wheel",
+                status: "active",
+                priority: "low" 
+        }, 
+    ] as UserTask[]
 }
