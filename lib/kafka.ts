@@ -7,3 +7,5 @@ export const kafka = new Kafka({
 })
 
 export const kafkaConsumer = kafka.consumer({ groupId: 'my-consumer-group' })
+
+export const kafkaTasksRenderConsumer = kafka.consumer({groupId:"render-group"})

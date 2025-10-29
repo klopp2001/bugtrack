@@ -1,4 +1,4 @@
-import { kafka, kafkaConsumer } from "@/lib/kafka";
+import { kafka, kafkaConsumer as kafkaTasksRenderConsumer } from "@/lib/kafka";
 
 export const runtime = "nodejs"
 
@@ -16,10 +16,11 @@ async function startKafkaConsumer() {
   if (kafkaStarted) return;
   kafkaStarted = true;
 
-  await kafkaConsumer.connect()
-  await kafkaConsumer.subscribe({topic: "notifications.client", fromBeginning:false})
+  await kafkaTasksRenderConsumer.connect()
+  await kafkaTasksRenderConsumer.subscribe({topic: "notifications.render.tasks", fromBeginning:false})
+
   console.log("kafka subscribed successfully")
-  await kafkaConsumer.run({
+  await kafkaTasksRenderConsumer.run({
     eachMessage: async ({message}) => {
       console.log("new message: " + message)
       if (!message || !message.value) return
@@ -27,6 +28,7 @@ async function startKafkaConsumer() {
       console.log("New kafka message:", payload)
       for (const [, client] of clients) {
         if (client.userId == payload.userId)
+
         client.controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(payload)}\n\n`))
       }
     }
