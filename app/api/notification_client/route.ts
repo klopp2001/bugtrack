@@ -1,4 +1,5 @@
-import { kafka, kafkaConsumer } from "@/lib/kafka";
+import { kafka, kafkaConsumer, kafkaProjectsConsumer, kafkaTasksConsumer } from "@/lib/kafka";
+import { KafkaMessage } from "kafkajs";
 
 export const runtime = "nodejs"
 
@@ -10,6 +11,8 @@ type SSEClient = {
 
 const clients = new Map<string, SSEClient>()
 
+const consumers = [kafkaConsumer, kafkaProjectsConsumer, kafkaTasksConsumer]
+
 let kafkaStarted = false
 
 async function startKafkaConsumer() {
@@ -18,27 +21,43 @@ async function startKafkaConsumer() {
 
   await kafkaConsumer.connect()
   await kafkaConsumer.subscribe({topic: "notifications.client", fromBeginning:false})
-  console.log("kafka subscribed successfully")
-  await kafkaConsumer.run({
-    eachMessage: async ({message}) => {
+
+  await kafkaProjectsConsumer.connect()
+  await kafkaProjectsConsumer.subscribe({topic: "notifications.tasks", fromBeginning:false})
+  console.log(`clinet connected to notifications tasks topic`)
+
+  await kafkaTasksConsumer.connect()
+  await kafkaTasksConsumer.subscribe({topic: "notifications.projects", fromBeginning:false})
+  console.log(`clinet connected to notifications projects topic`)
+  
+  console.log("kafka consumers subscribed successfully")
+
+  const hanleMessage = async ({message}) => {
       console.log("new message: " + message)
       if (!message || !message.value) return
       const payload = JSON.parse(message.value?.toString()) 
       console.log("New kafka message:", payload)
-      for (const [, client] of clients) {
-        if (client.userId == payload.userId)
-        client.controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(payload)}\n\n`))
-      }
+      
+      clients.get(payload.userId )?.controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(payload)}\n\n`))
     }
+
+  await kafkaConsumer.run({
+    eachMessage: hanleMessage
+  })
+
+  await kafkaProjectsConsumer.run({
+    eachMessage: hanleMessage
   })
 }
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url)
-  const userId  = url.searchParams.get("userId")?.toString() as string
+  let userId  = url.searchParams.get("userId")?.toString() as string
   if (!userId) {
     console.error("Couldn't find userId in url params")
+    userId = "1234"
   }
+
   await startKafkaConsumer();
   
   

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import SideBar from "../components/SideBar"
 import ProfilePanel from "@/components/ProfilePanel"
+import NotificationContextProvider from "./context/NotificationContextProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +31,10 @@ export default function RootLayout({
       <body className="h-full w-full flex ">
         <SideBar />
         <div className="w-full py-7 px-4">
-          <ProfilePanel />
-          {children}
+          <NotificationContextProvider>
+            <ProfilePanel />
+            {children}
+          </NotificationContextProvider>
         </div>
       </body>
     </html>
