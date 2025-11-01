@@ -1,91 +1,56 @@
-import { kafka, kafkaConsumer, kafkaProjectsConsumer, kafkaTasksConsumer } from "@/lib/kafka";
-import { KafkaMessage } from "kafkajs";
+// import { kafka, kafkaConsumer, kafkaProjectsConsumer, kafkaTasksConsumer } from "@/lib/kafka";
+// import { KafkaMessage } from "kafkajs";
+// import { clients, SSEClient } from "../../../workers/notifications";
 
-export const runtime = "nodejs"
+// export const runtime = "nodejs"
+// let timeOut = 15000
 
-type SSEClient = {
-  id: string;
-  userId: string;
-  controller: ReadableStreamDefaultController<Uint8Array>;
-}
+// export async function GET(request: Request): Promise<Response> {
+//   const url = new URL(request.url)
+//   let userId  = url.searchParams.get("userId")?.toString() as string
+//   if (!userId) {
+//     console.error("Couldn't find userId in url params")
+//     userId = "1234"
+//   }
 
-const clients = new Map<string, SSEClient>()
-
-const consumers = [kafkaConsumer, kafkaProjectsConsumer, kafkaTasksConsumer]
-
-let kafkaStarted = false
-
-async function startKafkaConsumer() {
-  if (kafkaStarted) return;
-  kafkaStarted = true;
-
-  await kafkaConsumer.connect()
-  await kafkaConsumer.subscribe({topic: "notifications.client", fromBeginning:false})
-
-  await kafkaProjectsConsumer.connect()
-  await kafkaProjectsConsumer.subscribe({topic: "notifications.tasks", fromBeginning:false})
-  console.log(`clinet connected to notifications tasks topic`)
-
-  await kafkaTasksConsumer.connect()
-  await kafkaTasksConsumer.subscribe({topic: "notifications.projects", fromBeginning:false})
-  console.log(`clinet connected to notifications projects topic`)
+//   //await startKafkaConsumer();
   
-  console.log("kafka consumers subscribed successfully")
+    
+//     const stream = new ReadableStream<Uint8Array>({
+//       start(controller) {
+//         const id = crypto.randomUUID()
+//         const client :SSEClient = {id, userId, controller}
+//         clients.set(userId, client)
+//         console.log(clients)
+//         console.log(`Client connected ${id}, total ${clients.size}`)
+        
+//         const pingFunction = () => {
+//           try{
+//             controller.enqueue(new TextEncoder().encode(":keep-alive \n\n"))
+//           } catch (err) {
+//             console.log(`Client ${client.userId} disconnected`)
+//             clients.delete(client.userId)
+//             clearInterval(keepAlive)
+//           }
+//         }
 
-  const hanleMessage = async ({message}) => {
-      console.log("new message: " + message)
-      if (!message || !message.value) return
-      const payload = JSON.parse(message.value?.toString()) 
-      console.log("New kafka message:", payload)
-      
-      clients.get(payload.userId )?.controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(payload)}\n\n`))
-    }
+//         pingFunction()
 
-  await kafkaConsumer.run({
-    eachMessage: hanleMessage
-  })
+//         const keepAlive = setInterval (pingFunction, timeOut)
 
-  await kafkaProjectsConsumer.run({
-    eachMessage: hanleMessage
-  })
-}
+//         controller.signal?.addEventListener("abort", () => {
+//           clearInterval(keepAlive)
+//           clients.delete(id)
+//           console.log(`Client disconnected : {id}`)
+//         })
+//       }
+//     })
 
-export async function GET(request: Request): Promise<Response> {
-  const url = new URL(request.url)
-  let userId  = url.searchParams.get("userId")?.toString() as string
-  if (!userId) {
-    console.error("Couldn't find userId in url params")
-    userId = "1234"
-  }
-
-  await startKafkaConsumer();
-  
-  
-  const stream = new ReadableStream<Uint8Array>({
-    start(controller) {
-      const id = crypto.randomUUID()
-      const client :SSEClient = {id, userId, controller}
-      clients.set(id, client)
-
-      console.log(`Client connected ${id}, total ${clients.size}`)
-
-      const keepAlive = setInterval (() => {
-        controller.enqueue(new TextEncoder().encode(":keep-alive \n\n"))
-      }, 15000)
-
-      controller.signal?.addEventListener("abort", () => {
-        clearInterval(keepAlive)
-        clients.delete(id)
-        console.log(`Client disconnected : {id}`)
-      })
-    }
-  })
-
-  return new Response (stream, {
-    headers: {
-      "Content-Type":"text/event-stream",
-      "Cache-Control": "no-cache, no-transform",
-      connection:"keep-alive"
-    }
-  })
-}
+//   return new Response (stream, {
+//     headers: {
+//       "Content-Type":"text/event-stream",
+//       "Cache-Control": "no-cache, no-transform",
+//       connection:"keep-alive"
+//     }
+//   })
+// }

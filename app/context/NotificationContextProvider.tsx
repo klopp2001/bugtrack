@@ -1,59 +1,69 @@
 "use client"
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { getRequest, ServiceRoutes } from '../api/http'
 
 
-const NotificationContext = createContext<NotificationContextInterface | null>(null)
+export const NotificationContext = createContext<NotificationContextInterface | null>(null)
 
 interface NotificationContextInterface {
-    tasksNotifications: [any]
-    projectsNotifications: [any]
+  tasksNotifications: any[]
+  projectsNotifications: any[]
 }
 
 type Notification = {
-    type: string
-    userId: string
-    payload: string
+  userId: string
+  type: string
+  payload: string
 }
 
 
 const NotificationContextProvider = ({children} ) => {
-    const [projectsNotifications, setProjectsNotifications] = useState([]) 
-    const [tasksNotifications, setTasksNotifications] = useState([])
+  const [projectsNotifications, setProjectsNotifications] = useState([]) 
+  const [tasksNotifications, setTasksNotifications] = useState([])
 
-    useEffect(() => {
-      const es = new EventSource("/api/notification_client")
-      es.onopen = (e) => {
-        console.log("connection established")
-      }
-      es.onmessage = (event) => {
-        const payload = JSON.parse(event.data) as Notification
+  useEffect(() => {
+    console.log("New render")
+    const es = new EventSource("http://localhost:3001/notification_client/sse?userId=1234")
+    es.onopen = (e) => {
+      console.log("connection established")
 
-        switch (payload.type) {
-          case "tasks":
-          {
-            setTasksNotifications((prev) => [...prev, payload])
-            break;
-          }
+      const userId = 1234 //localStorage.getItem("userId")
+      console.log("sending request for init notifications")
+      getRequest(ServiceRoutes.getProjects + "?userId=" + userId)
+  
+    }
+    es.onmessage = (event) => {
+      console.log("New Notification")
+      
+      const payload = JSON.parse(event.data) as Notification
+      console.log(`${payload}`)  
+      switch (payload.type) {
+        case "tasks":
+        {
+          setTasksNotifications((prev) => [...prev, payload])
+          break;
+        }
 
-          case "projects":
-          {
-            setProjectsNotifications((prev) => [...prev, payload])
-            break;
-          }
+        case "projects":
+        {
+          setProjectsNotifications((prev) => [...prev, payload])
+          break;
         }
       }
-      es.onerror = (err) => {
-        console.error("SSE error:", err)
-        es.close()
-      }
-      return () => es.close()
-    }, [])
-    const notifications = {tasksNotifications, projectsNotifications}
-    return (
-      <NotificationContext.Provider value={notifications}>
-        {children}
-      </NotificationContext.Provider>
-    )
+    }
+    es.onerror = (err) => {
+      console.error("SSE error:", err)
+      es.close()
+    }
+    return () => es.close()
+  }, [])
+
+  const notifications = {tasksNotifications, projectsNotifications}
+  return (
+    <NotificationContext.Provider value={notifications}>
+      {children}
+    </NotificationContext.Provider>
+  )
 }
 
 export default NotificationContextProvider
