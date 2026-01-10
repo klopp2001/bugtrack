@@ -6,6 +6,7 @@ import ProfilePanel from "@/components/ProfilePanel"
 import NotificationContextProvider from "./context/NotificationContextProvider"
 
 import { getRequest, ServiceRoutes } from "./api/http"
+import { ProjectContextProvider } from "./context/ProjectContextProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,21 +25,27 @@ export const metadata: Metadata = {
 
 let serverInit = false
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  let response = await await getRequest(
+    ServiceRoutes.project + "/project_members?userId=1234"
+  )
+  const projects = await response.json()
   return (
     <html className="w-full h-full">
       <body className="h-full w-full flex ">
-        <SideBar />
-        <div className="w-full py-7 px-4">
-          <NotificationContextProvider>
-            <ProfilePanel />
-            {children}
-          </NotificationContextProvider>
-        </div>
+        <ProjectContextProvider projects={projects}>
+          <SideBar projects={[]} />
+          <div className="w-full py-7 px-4">
+            <NotificationContextProvider>
+              <ProfilePanel />
+              {children}
+            </NotificationContextProvider>
+          </div>
+        </ProjectContextProvider>
       </body>
     </html>
   )

@@ -20,10 +20,10 @@ const TasksRect = ({ userTasks }: TasksRectProps) => {
   const [notifications, setNotifications] = useState<Notification[]>([])
   useEffect(() => {
     const userId = localStorage.getItem("userId")
-  
+
     const es = new EventSource(
       `/api/notification_client/render/tasks?userId=${userId}`
-    ) 
+    )
 
     es.onopen = (e) => {
       console.log("connection established")
@@ -33,13 +33,13 @@ const TasksRect = ({ userTasks }: TasksRectProps) => {
       const payload = JSON.parse(event.data) as Notification
       setNotifications((prev) => [...prev, payload])
     }
-    
+
     es.onerror = (err) => {
       console.error("SSE error:", err)
       es.close()
     }
 
-    getRequest(ServiceRoutes.getProjects + "?userId=" + userId )
+    getRequest(ServiceRoutes.project + "?userId=" + userId)
 
     //return () => es.close()
   }, [])

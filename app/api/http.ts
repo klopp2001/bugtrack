@@ -3,7 +3,8 @@ const gateway = "http://localhost:8085"
 export const enum ServiceRoutes {
   createProject = gateway + "/api/project/create",
   deleteProject = gateway + "/api/project/delete",
-  getProjects = gateway + "/api/project/get",
+  project = gateway + "/api/project/",
+  issues = gateway + "/api/issues/",
   //notifications = gateway + "/api/notification_client/"
 } 
 

@@ -1,9 +1,9 @@
 "use client"
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { getRequest, ServiceRoutes } from '../api/http'
+import React, { createContext, useContext, useEffect, useState } from "react"
+import { getRequest, ServiceRoutes } from "../api/http"
 
-
-export const NotificationContext = createContext<NotificationContextInterface | null>(null)
+export const NotificationContext =
+  createContext<NotificationContextInterface | null>(null)
 
 interface NotificationContextInterface {
   tasksNotifications: any[]
@@ -16,38 +16,36 @@ type Notification = {
   payload: string
 }
 
-
-const NotificationContextProvider = ({children} ) => {
-  const [projectsNotifications, setProjectsNotifications] = useState([]) 
+const NotificationContextProvider = ({ children }) => {
+  const [projectsNotifications, setProjectsNotifications] = useState([])
   const [tasksNotifications, setTasksNotifications] = useState([])
 
   useEffect(() => {
     console.log("New render")
-    const es = new EventSource("http://localhost:3001/notification_client/sse?userId=1234")
+    const es = new EventSource(
+      "http://localhost:3001/notification_client/sse?userId=1234"
+    )
     es.onopen = (e) => {
       console.log("connection established")
 
       const userId = 1234 //localStorage.getItem("userId")
       console.log("sending request for init notifications")
-      getRequest(ServiceRoutes.getProjects + "?userId=" + userId)
-  
+      getRequest(ServiceRoutes.project + "?userId=" + userId)
     }
     es.onmessage = (event) => {
       console.log("New Notification")
-      
+
       const payload = JSON.parse(event.data) as Notification
-      console.log(`${payload}`)  
+      console.log(`${payload}`)
       switch (payload.type) {
-        case "tasks":
-        {
+        case "tasks": {
           setTasksNotifications((prev) => [...prev, payload])
-          break;
+          break
         }
 
-        case "projects":
-        {
+        case "projects": {
           setProjectsNotifications((prev) => [...prev, payload])
-          break;
+          break
         }
       }
     }
@@ -58,7 +56,7 @@ const NotificationContextProvider = ({children} ) => {
     return () => es.close()
   }, [])
 
-  const notifications = {tasksNotifications, projectsNotifications}
+  const notifications = { tasksNotifications, projectsNotifications }
   return (
     <NotificationContext.Provider value={notifications}>
       {children}

@@ -1,25 +1,18 @@
 "use client"
 import React, { useCallback, useState } from "react"
 import clsx from "clsx"
-interface ButtonProps {
-  onButtonClicked: () => void
+interface ButtonForModalProps {
   buttonType: "DEFAULT" | "DANGER"
   children?: React.ReactNode
   icon?: any
   //TODO:: make basic colors
 }
 
-const Button = ({
-  onButtonClicked,
+const ButtonForModal = ({
   buttonType,
   children,
   icon,
-}: ButtonProps) => {
-  const [isClicked, setIsClicked] = useState(false)
-  const handleClick = useCallback(() => {
-    onButtonClicked(), setIsClicked(!isClicked)
-  }, [isClicked])
-
+}: ButtonForModalProps) => {
   return (
     <button
       className={clsx(
@@ -30,11 +23,11 @@ const Button = ({
 
         "flex  transition-all duration-200 ease-in-out flex-row min-w-[180px] gap-2 px-4 py-2 text-center items-center text-white justify-center rounded-xl shadow font-bold"
       )}
-      onClick={handleClick}
     >
       {icon}
       {children}
     </button>
   )
 }
-export default Button
+
+export default ButtonForModal
