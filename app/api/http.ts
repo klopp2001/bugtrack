@@ -21,7 +21,7 @@ export const getRequest = async (url : string, body = undefined) => {
   return response
 }
 
-export const postRequest = async (url : string, body: string) => {
+export const postRequest = async (url : string, body: string | any) => {
   console.log(url)
   const response = await fetch(url, {
     method: 'POST',

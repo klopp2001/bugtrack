@@ -1,5 +1,5 @@
 export type IssueGroup = {
-    id:	string
+    id:	number
     projectId:	string
     name :	string
     position: number

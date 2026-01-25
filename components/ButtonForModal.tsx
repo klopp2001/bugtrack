@@ -15,6 +15,7 @@ const ButtonForModal = ({
 }: ButtonForModalProps) => {
   return (
     <button
+      type="submit"
       className={clsx(
         buttonType == "DEFAULT" &&
           "bg-green-400 hover:bg-green-600 hover:cursor-pointer  shadow-green-700",
