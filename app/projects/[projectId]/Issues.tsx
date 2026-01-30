@@ -5,7 +5,10 @@ import IssuesContainer from "../components/IssuesContainer"
 import { getRequest, ServiceRoutes } from "@/app/api/http"
 import { IssueGroup } from "@/app/types/issueGroup"
 import { Issue } from "@/app/types/issue"
-import { loadIssueGroups, loadIssues } from "@/app/api/issues_service/actions"
+import {
+  getIssueGroups,
+  getProjectIssues,
+} from "@/app/api/issues_service/actions"
 import IssuePreview from "../components/IssuePreview"
 import { useProject } from "../context/ProjectContext"
 
@@ -53,7 +56,7 @@ export const Issues = ({ issues, issuesGroup }: IssuesProps) => {
   }, [])
 
   return (
-    <div className="flex w-full justify-between px-6 py-4">
+    <div className="flex w-2/3 justify-between px-6 py-4">
       {issuesMap &&
         Array.from(issuesMap.entries()).map(([group, issues]) => (
           <IssuesContainer

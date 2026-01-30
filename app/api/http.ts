@@ -5,6 +5,8 @@ export const enum ServiceRoutes {
   deleteProject = gateway + "/api/project/delete",
   project = gateway + "/api/project/",
   issues = gateway + "/api/issues/",
+  users = gateway + "/api/users/",
+  
   //notifications = gateway + "/api/notification_client/"
 } 
 

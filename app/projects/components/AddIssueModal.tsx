@@ -4,7 +4,11 @@ import React, { useState } from "react"
 import { useProject } from "../context/ProjectContext"
 import { sendNewIssue } from "@/app/api/issues_service/actions"
 
-const AddIssueModal = () => {
+interface AddIssueModalProps {
+  issueGroupId: any
+}
+
+const AddIssueModal = ({ issueGroupId }: AddIssueModalProps) => {
   const [onCreated, setOnCreated] = useState(false)
   const { projectId } = useProject()
   const inputNames = [
@@ -28,7 +32,7 @@ const AddIssueModal = () => {
     const titleDto = formData.get("title") as string
     const keyDto = formData.get("key") as string
     const statusDto = formData.get("status") as string
-    const issueGroupIdDto = formData.get("issueGroupId") as string
+    const issueGroupIdDto = issueGroupId
     const descriptionDto = formData.get("description") as string
 
     let isseDto = createIssueDTO(
