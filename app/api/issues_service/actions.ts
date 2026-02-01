@@ -1,4 +1,4 @@
-import { Issue, IssueDTO } from "@/app/types/issue"
+import { Issue, IssueDTO, IssueMessage } from "@/app/types/issue"
 import { getRequest, postRequest, ServiceRoutes } from "../http"
 import { IssueGroup } from "@/app/types/issueGroup"
 import { User, UserDto } from "@/app/types/user"
@@ -28,7 +28,7 @@ export const getProjectMembers = async (projectId: number) => {
     ServiceRoutes.project + `/${projectId}/members` 
   )
   const userDto = await response.json() as UserDto[]
-  return userDto.map((dto) => ({id : dto.projectId, name: dto.userName})) as User[]
+  return userDto.map((dto) => ({id : dto.userId, name: dto.userName, avatarUrl: dto.avatarUrl})) as User[]
 }
 
 export const getIssue = async (id : number) => {
@@ -46,6 +46,14 @@ export const getUser = async (id : number) => {
   )
   return await response.json() as User
 }
+
+export const getIssueMessages = async (id: number) => {
+  const response = await getRequest(
+    ServiceRoutes.issues + `/messages?issueId=${id}`
+  )
+
+  return await response.json() as IssueMessage[]
+} 
 
 export const getUsers = async (ids : number[]) => {
   console.log('fetching user')

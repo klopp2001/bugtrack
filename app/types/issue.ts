@@ -1,4 +1,5 @@
 import { IssueGroup } from "./issueGroup";
+import { User } from "./user";
 
 export type Issue = {
     id: string;
@@ -6,10 +7,13 @@ export type Issue = {
     reporterId: number;
     assigneeId: number;
     title: string;
-    issueKey: string;
+    issue_key: string;
     'description'?: string;
     status: IssueStatusEnum;
     issueGroup: IssueGroup;
+
+    reporterUser?: User;
+    assigneeUser?: User;
 }
 
 export type IssueDTO = {
@@ -22,6 +26,8 @@ export type IssueDTO = {
     issueGroupId: string;
     'description'?: string;
 }
+
+
 
 export const createIssueDTO = (
     projectId: string,
@@ -51,3 +57,15 @@ export enum IssueStatusEnum {
     Done = 'DONE',
     Closed = 'CLOSED'
 }
+
+
+export interface IssueMessage{
+	id: number; 
+	issue: Issue; 
+	message: string; 
+	userId: number; 
+    avatarUrl: string;
+	userName: string; 
+	createdAt: string; 
+}
+

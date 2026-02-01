@@ -38,11 +38,13 @@ export default async function RootLayout({
     <html className="w-full h-full">
       <body className="h-full w-full flex ">
         <ProjectContextProvider projects={projects}>
-          <SideBar projects={[]} />
+          <SideBar />
           <div className="w-full py-7 px-4">
             <NotificationContextProvider>
-              <ProfilePanel />
-              {children}
+              <div className="mx-4">
+                <ProfilePanel />
+                <div className="mt-20">{children}</div>
+              </div>
             </NotificationContextProvider>
           </div>
         </ProjectContextProvider>

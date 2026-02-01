@@ -28,11 +28,7 @@ interface SideBarProject {
   key: string
 }
 
-interface SideBarProps {
-  projects: Project[]
-}
-
-const SideBar = ({ projects }: SideBarProps) => {
+const SideBar = () => {
   const [newProjModalShowed, setNewProjModalShowed] = useState(false)
   useEffect(() => {
     localStorage.setItem("userId", "1234")
@@ -41,7 +37,7 @@ const SideBar = ({ projects }: SideBarProps) => {
   console.log(projectsContext?.projectsState)
   return (
     <>
-      <div className="bg-gray-50 sticky border-r-2 border-gray-200 w-1/6 min-w-48 flex flex-col justify-between h-full items-center py-7 px-4 ">
+      <div className="bg-gray-50 sticky border-r-2 border-gray-200  min-w-56 flex flex-col justify-between h-full items-center py-24 px-4 ">
         <div className="flex flex-col gap-2">
           <SideBarLink hrefValue="/overview" icon={<FaHome />}>
             Overview

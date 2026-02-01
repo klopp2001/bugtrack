@@ -1,60 +1,93 @@
 "use client"
-import { Task } from "@/app/types/tasks"
-import Button from "@/components/Button"
-import ButtonForModal from "@/components/ButtonForModal"
+
 import React, { useState } from "react"
 import Popup from "reactjs-popup"
-import IssuePreview from "./IssuePreview"
+import { useDroppable } from "@dnd-kit/core"
+
 import { Issue } from "@/app/types/issue"
+import IssuePreview from "./IssuePreview"
 import AddIssueModal from "./AddIssueModal"
+import { Draggable } from "./Draggable"
+import clsx from "clsx"
+import { IssueGroup } from "@/app/types/issueGroup"
+import { User } from "@/app/types/user"
 
 interface IssueProgressContainerProps {
+  id: number // уникальный id колонки
   title: string
   color: string
   issues: Issue[]
+  issuesGroup: IssueGroup[]
+  users: User[]
 }
 
-const IssuesContainer = ({
+const IssuesKanban = ({
+  id,
   title,
   color,
   issues,
+  issuesGroup,
+  users,
 }: IssueProgressContainerProps) => {
   const [onAddIssueClicked, setOnIssueClicked] = useState(false)
-  const closeModal = () => setOnIssueClicked(false)
+
+  // Используем один droppable на всю колонку
+  const { isOver, setNodeRef } = useDroppable({
+    id,
+  })
+
   return (
-    <div className={"flex flex-col max-w-1/4 " + `bg-[${color}]`}>
-      <div className="flex flex-col gap-2">
-        <div>
-          <h1 className="text-2xl font-bold">{title}</h1>
-          <div className="text-xs">{issues.length} tasks available</div>
+    <>
+      {onAddIssueClicked && (
+        <div className="absolute w-full h-full left-0 top-0 bg-gray-400 opacity-40"></div>
+      )}
+      <div
+        ref={setNodeRef}
+        className={`flex flex-col items-center max-w-2/3 px-2 py-2 shadow  transition
+          ${isOver ? "bg-blue-100" : "bg-gray-100"}`}
+      >
+        <div className="flex flex-col gap-2 w-full">
+          <h1
+            className={clsx(
+              color ? `font-bold text-[${color}]` : `font-bold text-black]`
+            )}
+          >
+            {title}
+            <span className="ml-4 text-black">{issues.length}</span>
+          </h1>
+
+          <div className="flex flex-col gap-2">
+            {issues.map((task) => (
+              <Draggable key={task.id} id={task.id}>
+                <IssuePreview issue={task} />
+              </Draggable>
+            ))}
+          </div>
         </div>
+
         <Popup
           trigger={
             <button
-              type="submit"
-              className="bg-green-400 hover:bg-green-600 hover:cursor-pointer  shadow-green-700 duration-200 ease-in-out flex-row min-w-[140px] gap-2 px-4 py-2 text-center items-center text-white justify-center rounded-xl shadow font-bold"
+              type="button"
+              className="bg-sky-300 hover:bg-sky-400 shadow-sky-700 duration-200
+                w-8 py-0.5 text-white rounded-full shadow font-bold mt-4 mb-2"
             >
-              Add Issue
+              +
             </button>
           }
           onOpen={() => setOnIssueClicked(true)}
-          onClose={closeModal}
+          onClose={() => setOnIssueClicked(false)}
           modal
-          position="top center"
         >
-          <AddIssueModal />
+          <AddIssueModal
+            issueGroupId={undefined}
+            issuesGroup={issuesGroup}
+            users={users}
+          />
         </Popup>
       </div>
-      <div className="flex flex-col mt-10 gap-8">
-        {issues.map((task) => (
-          <IssuePreview key={task.key} issue={task} />
-        ))}
-      </div>
-      {onAddIssueClicked && (
-        <div className="absolute top-0 left-0 w-full h-full bg-black opacity-20 z-10"></div>
-      )}
-    </div>
+    </>
   )
 }
 
-export default IssuesContainer
+export default IssuesKanban

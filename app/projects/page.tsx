@@ -1,7 +1,7 @@
 "use client"
 import React, { useContext } from "react"
 import { NotificationContext } from "../context/NotificationContextProvider"
-import IssuesContainer from "./components/IssuesContainer"
+import IssuesKanban from "./components/IssuesContainer"
 import { Task } from "../types/tasks"
 
 const ProjectsPage = () => {
